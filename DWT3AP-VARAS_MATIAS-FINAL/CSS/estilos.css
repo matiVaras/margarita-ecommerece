@@ -1,0 +1,46 @@
+html {
+    font-family: Open Sans, sans-serif;
+    padding: 0;
+}
+pre{
+    border:thin solid gainsboro;
+    border-radius: 1em;
+    background-color: ghostwhite;
+    margin: 1em;
+    padding: 1em;
+    color: rgb(44, 44, 44);
+}
+.navbar {
+    border-bottom: solid lightskyblue 0.2rem;
+}
+.card {
+    background-color: rgba(173, 216, 230, 0.185);
+}
+.card:hover {
+    background-image: radial-gradient(lightblue 1%, transparent);
+    background-color: rgba(173, 216, 230, 0.548);
+    transition: all .5s;
+    transform: scale(1.03);
+}
+footer {
+    padding: 4rem;
+    font-size: 1.5rem;
+    display: block;
+    border-top: solid lightskyblue 0.2rem;
+}
+a {
+    color: lightskyblue;
+    text-decoration: none;
+}
+a:hover {
+    color: pink;
+}
+.mifoto {
+    max-width: 250px;
+}
+
+/* ICONOS */
+.btn-edit {
+    background-color: red;
+}
+/* /ICONOS */

@@ -1,0 +1,297 @@
+<?php
+    class Producto {
+        protected $id;
+        protected $titulo;
+        protected $prenda_id; // personaje_principal_id
+        protected $talle;
+        protected $temporada_id; // serie_id
+        protected $material_id; // guionista_id
+        protected $marca_id; // artista_id
+        protected $descripcion;
+        protected $portada;
+        protected $precio;
+        
+    public function insert($titulo, $prenda_id, $temporada_id, $material_id, $marca_id, $talle, $descripcion, $portada, $precio)
+    {
+
+        $conexion = (new Conexion())->getConexion();
+        $query = "INSERT INTO comics VALUES (NULL, :titulo, :prenda_id, :temporada_id, :material_id, :marca_id, :talle, :descripcion, :portada, :precio)";
+      
+        $PDOStatement = $conexion->prepare($query);
+        $PDOStatement->execute(
+            [
+                'titulo' => $titulo,
+                'prenda_id' => $prenda_id,
+                'temporada_id' => $temporada_id,
+                'material_id' => $material_id,
+                'marca_id' => $marca_id,
+                'talle' => $talle,
+                'descripcion' => $descripcion,
+                'portada' => $portada,
+                'precio' => $precio,
+            ]
+        );
+    }
+
+    public function traer_catalogo_completo() : array {
+
+        $catalogo = [];
+
+        $conexion = (new Conexion())->getConexion();
+        $query = "SELECT * FROM producto";
+        
+        $PDOStatement = $conexion->prepare($query);
+        $PDOStatement->setFetchMode(PDO::FETCH_CLASS, self::class);
+        $PDOStatement->execute();
+
+        $catalogo = $PDOStatement->fetchAll();
+        echo "<pre>";
+        print_r($catalogo);
+        echo "</pre>";
+        return $catalogo;
+    }
+
+    public function catalogo_por_prenda(string $prenda) : array {
+
+        $resultado = [];
+        
+        $conexion = (new Conexion())->getConexion();
+        $query = "SELECT * FROM producto WHERE prenda_id = ?";
+
+        $PDOStatement = $conexion->prepare($query);
+        $PDOStatement->setFetchMode(PDO::FETCH_CLASS, self::class);
+        $PDOStatement->execute([$prenda]);
+        
+        $resultado = $PDOStatement->fetchAll();
+        echo "<pre>";
+        print_r($resultado);
+        echo "</pre>";
+        return $resultado;
+    }
+
+    public function producto_por_id(int $idProducto) : ? Producto
+    {
+        $conexion = (new Conexion())->getConexion();
+        $query = "SELECT * FROM producto WHERE id = :idProducto";
+
+        $PDOStatement = $conexion->prepare($query);
+        $PDOStatement->setFetchMode(PDO::FETCH_CLASS, self::class);
+        $PDOStatement->execute(["idProducto" => $idProducto]);
+
+        $result = $PDOStatement->fetch();
+
+        if (!$result) {
+            return null;
+        }
+        return $result;
+    }
+
+    // public function producto_por_id(int $idProducto) {
+    //     $resultado = [];
+    //     $query = "SELECT * FROM producto WHERE id = $idProducto";
+    //     $conexion = (new Conexion())->getConexion();
+    //     $PDOStatement = $conexion->prepare($query);
+    //     $PDOStatement->execute();
+    //     $PDOStatement->setFetchMode(PDO::FETCH_CLASS, self::class);
+    //     $resultado = $PDOStatement->fetch();
+    //     echo "<pre>";
+    //     print_r($resultado);
+    //     echo "</pre>";
+    //     return $resultado;
+    // }
+
+    public function precio_formateado() : string {
+            return number_format($this->precio, 2, ",", ".");
+        }
+    
+    public function descripcion() {
+        $texto = $this->descripcion;
+        $array = explode(" ", $texto);
+        $resultado = "";
+
+        if(count($array)) {
+            $resultado = $texto;
+        } else {
+            array_splice($array);
+        }
+        return $resultado;
+    }
+
+    /**
+     * Get the value of personaje
+     */
+    public function getPersonaje()
+    {
+        $personaje = (new Personaje())->get_por_id($this->personaje_pricipal_id);
+        $nombre = $personaje->getNombre();
+        $alias = $personaje->getAlias();
+        return "$nombre ($alias)";
+    }
+
+    /**
+     * Get the value of serie
+     */
+    public function getSerie()
+    {
+        $serie = (new Serie())->get_por_id($this->serie_id);
+        $nombre = $serie->getNombre();
+        return $nombre;
+    }
+
+    /**
+     * Get the value of titulo
+     */
+    public function getTitulo()
+    {
+        return $this->titulo;
+    }
+
+    /**
+     * Get the value of guion
+     */
+    public function getMarca()
+    {
+        $marca = (new Marca())->get_por_id($this->marca_id);
+        $nombre = $marca->getNombre();
+        return $nombre;
+    }
+
+    /**
+     * Get the value of arte
+     */
+    public function getMaterial()
+    {
+        $material = (new Material())->get_por_id($this->material_id);
+        $nombre = $material->getNombre();
+        return $nombre;
+    }
+
+    /**
+     * Get the value of bajada
+     */
+    public function getDescripcion()
+    {
+        return $this->descripcion;
+    }
+
+    /**
+     * Get the value of portada
+     */
+    public function getPortada()
+    {
+        return $this->portada;
+    }
+
+    /**
+     * Get the value of precio
+     */
+    public function getPrecio()
+    {
+        return $this->precio;
+    }
+
+    /**
+     * Get the value of id
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    // /*
+    //   Get the value of id
+    //  */
+    // public function getId()
+    // {
+    //     return $this->id;
+    // }
+
+    // /*
+    //   Get the value of titulo
+    //  */
+    // public function getTitulo()
+    // {
+    //     return $this->titulo;
+    // }
+    
+    // /*
+    //   Get the value of edscripcion
+    //  */
+    // public function getDescripcion()
+    // {
+    //     return $this->descripcion;
+    // }
+
+    // /*
+    //   Get the value of portada
+    //  */
+    // public function getPortada()
+    // {
+    //     return $this->portada;
+    // }
+
+    // /*
+    //   Get the value of precio
+    //  */
+    // public function getPrecio()
+    // {
+    //     return $this->precio;
+    // }
+
+    // /*
+    //   Get the value of marca
+    //  */
+    // public function getMarca()
+    // {
+    //     return $this->marca_id;
+    // }
+
+    // /*
+    //   Get the value of talle
+    //  */
+    // public function getTalle()
+    // {
+    //     return $this->talle;
+    // }
+
+    // /*
+    //   Get the value of temporada
+    //  */
+    // public function getTemporada()
+    // {
+    //     return $this->temporada_id;
+    // }
+
+    // /*
+    //   Get the value of material
+    //  */
+    // public function getMaterial()
+    // {
+    //     return $this->material_id;
+    // }
+
+    // public function getMaterial(){
+    //     $material = (new Material())->producto_por_id( $this->material_id );
+    //     $nombre = $material->getNombre_completo();
+    //     return $nombre;
+    // }
+
+    // public function getTemporada(){
+    //     $temporada = (new Temporada())->producto_por_id( $this->temporada_id );
+    //     $nombre = $temporada->getNombre();
+    //     return $nombre; 
+    // }
+
+    // public function getMarca(){
+    //     $marca = (new Marca())->producto_por_id( $this->marca_id );
+    //     $nombre = $marca->getNombre_completo();
+    //     return $nombre; 
+    // }
+
+    // public function getPrenda(){
+    //     $prenda = (new Prenda())->producto_por_id( $this->prenda_id );
+    //     $nombre = $prenda->getTitulo(true);
+    //     return $nombre;
+    // }
+};
+?>
